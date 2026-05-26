@@ -21,9 +21,17 @@ import {
   HeartHandshake,
   Coins,
   Compass,
-  Star,
+  Download,
+  Link2,
+  Share2,
 } from "lucide-react";
 import { toast } from "sonner";
+import ReadingView from "@/components/landing/ReadingView";
+import {
+  downloadReadingPdf,
+  copyShareLink,
+  buildWhatsAppShare,
+} from "@/lib/readingShare";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -289,13 +297,26 @@ function Field({ label, htmlFor, optional, children }) {
 }
 
 function ReadingResult({ reading, onRestart }) {
-  const sections = [
-    { key: "overview", label: "Cosmic Overview" },
-    { key: "career", label: "Career" },
-    { key: "love", label: "Love" },
-    { key: "finance", label: "Finance" },
-    { key: "health", label: "Health & Energy" },
-  ];
+  const [pdfBusy, setPdfBusy] = useState(false);
+
+  const handleCopy = async () => {
+    await copyShareLink(reading);
+    toast.success("Share link copied to clipboard ✨");
+  };
+
+  const handlePdf = async () => {
+    setPdfBusy(true);
+    try {
+      await downloadReadingPdf(reading);
+      toast.success("Your reading PDF is downloading 🪶");
+    } catch (e) {
+      toast.error("Could not generate PDF. Try again.");
+    } finally {
+      setPdfBusy(false);
+    }
+  };
+
+  const waLink = buildWhatsAppShare(reading);
 
   return (
     <motion.div
@@ -306,84 +327,45 @@ function ReadingResult({ reading, onRestart }) {
       data-testid="reading-result"
       className="space-y-6"
     >
-      {reading.sun_sign && (
-        <div className="flex items-center gap-2 rounded-full border border-[#E5B869]/30 bg-[#E5B869]/[0.06] px-4 py-2 text-xs">
-          <Star className="h-3.5 w-3.5 text-[#E5B869]" />
-          <span className="font-accent uppercase tracking-[0.2em] text-[#E5B869]">
-            Sun Sign · {reading.sun_sign}
-          </span>
-        </div>
-      )}
+      <ReadingView reading={reading} compact />
 
-      {sections.map(
-        (s) =>
-          reading[s.key] && (
-            <div key={s.key}>
-              <h4 className="font-accent text-[10px] uppercase tracking-[0.3em] text-[#E5B869]">
-                · {s.label} ·
-              </h4>
-              <p className="mt-2 text-[15px] leading-relaxed text-white/80">
-                {reading[s.key]}
-              </p>
-            </div>
-          )
-      )}
-
-      {reading.remedies?.length > 0 && (
-        <div>
-          <h4 className="font-accent text-[10px] uppercase tracking-[0.3em] text-[#E5B869]">
-            · Vedic Remedies ·
-          </h4>
-          <ul className="mt-3 space-y-2">
-            {reading.remedies.map((r, i) => (
-              <li
-                key={i}
-                className="flex gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-3 text-sm leading-relaxed text-white/75"
-              >
-                <span className="font-accent text-[#E5B869]">{String(i + 1).padStart(2, "0")}</span>
-                <span>{r}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {reading.lucky && (
-        <div>
-          <h4 className="font-accent text-[10px] uppercase tracking-[0.3em] text-[#E5B869]">
-            · Your Lucky Stars ·
-          </h4>
-          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {["color", "number", "day", "gemstone"].map((k) =>
-              reading.lucky[k] ? (
-                <div
-                  key={k}
-                  className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-center"
-                >
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-white/45">{k}</div>
-                  <div className="mt-1 font-heading text-sm text-white">
-                    {reading.lucky[k]}
-                  </div>
-                </div>
-              ) : null
-            )}
-          </div>
-          {reading.lucky.mantra && (
-            <div className="mt-3 rounded-xl border border-[#E5B869]/20 bg-[#E5B869]/[0.04] p-4 text-center">
-              <div className="font-accent text-[10px] uppercase tracking-[0.3em] text-[#E5B869]">
-                · Mantra ·
-              </div>
-              <p className="mt-2 font-accent italic text-white/85">
-                {reading.lucky.mantra}
-              </p>
-            </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <button
+          data-testid="share-copy-link"
+          onClick={handleCopy}
+          className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-white/80 transition-colors hover:border-[#E5B869]/40 hover:text-white"
+        >
+          <Link2 className="h-4 w-4 text-[#E5B869]" />
+          Copy link
+        </button>
+        <a
+          data-testid="share-whatsapp"
+          href={waLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-white/80 transition-colors hover:border-[#E5B869]/40 hover:text-white"
+        >
+          <Share2 className="h-4 w-4 text-[#E5B869]" />
+          Share
+        </a>
+        <button
+          data-testid="download-pdf"
+          onClick={handlePdf}
+          disabled={pdfBusy}
+          className="col-span-2 flex items-center justify-center gap-2 rounded-xl border border-[#E5B869]/30 bg-[#E5B869]/[0.08] px-4 py-2.5 text-sm font-medium text-[#E5B869] transition-colors hover:bg-[#E5B869]/[0.14] disabled:opacity-60 sm:col-span-1"
+        >
+          {pdfBusy ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
           )}
-        </div>
-      )}
+          PDF
+        </button>
+      </div>
 
-      <div className="flex flex-col items-center gap-3 border-t border-white/5 pt-6 sm:flex-row sm:justify-between">
+      <div className="flex flex-col items-center gap-3 border-t border-white/5 pt-5 sm:flex-row sm:justify-between">
         <p className="text-xs text-white/40">
-          Reading id: {reading.id?.slice(0, 8)}
+          Reading id · {reading.id?.slice(0, 8)}
         </p>
         <button
           data-testid="reading-restart"

@@ -7,6 +7,8 @@ import WhySection from "@/components/landing/WhySection";
 import FeaturesGrid from "@/components/landing/FeaturesGrid";
 import HowItWorks from "@/components/landing/HowItWorks";
 import Testimonials from "@/components/landing/Testimonials";
+import WhatsAppOptIn from "@/components/landing/WhatsAppOptIn";
+import Pricing from "@/components/landing/Pricing";
 import FinalCTA from "@/components/landing/FinalCTA";
 import Footer from "@/components/landing/Footer";
 import ReadingModal from "@/components/landing/ReadingModal";
@@ -26,6 +28,8 @@ export default function Landing() {
         <FeaturesGrid />
         <HowItWorks onCTAClick={openModal} />
         <Testimonials />
+        <WhatsAppOptIn />
+        <Pricing />
         <FinalCTA onCTAClick={openModal} />
       </main>
       <Footer />

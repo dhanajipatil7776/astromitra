@@ -13,7 +13,7 @@ export default function Header({ onCTAClick }) {
     { label: "Why Us", href: "#why" },
     { label: "Features", href: "#features" },
     { label: "How It Works", href: "#how" },
-    { label: "Voices", href: "#testimonials" },
+    { label: "Pricing", href: "#pricing" },
   ];
 
   return (

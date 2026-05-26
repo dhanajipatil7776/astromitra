@@ -1,0 +1,49 @@
+{
+  "summary": "Iteration 2 testing complete. All NEW backend endpoints (GET /api/reading/{id}, POST /api/whatsapp/subscribe, POST /api/notify) and NEW frontend flows (shareable /reading/:id page, WhatsApp opt-in, Pricing notify-me) work end-to-end. 11/11 new backend tests PASS. Frontend share page renders all 8 sections, share buttons (copy, whatsapp, PDF) wired correctly. Landing page WhatsApp + Pricing forms successfully submit and trigger success toast/inline state. ReadingModal step1→step2 navigation still works. As noted by main agent, /api/reading POST still 502s due to exhausted EMERGENT_LLM_KEY budget (pre-existing, not a new bug).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/reading", "issue": "Pre-existing from iter1: 502 'Budget has been exceeded' from EMERGENT_LLM_KEY. Not retested. Reading creation path remains blocked until key is topped up."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Pricing & WhatsApp sections (desktop 1920x1080)", "issues": ["Premium dark/gold visual is consistent with rest of landing. Pricing card success state (inline green check + waitlist text) is clear and on-brand. No contrast or overflow issues observed."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration2.py",
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/iteration2_results.xml"
+  ],
+  "action_items": [
+    "(Carry-over from iter1) Refresh / top-up EMERGENT_LLM_KEY so POST /api/reading produces real readings instead of 502. Without this, the share/PDF flow can only be exercised on the seeded demo-reading-001 doc.",
+    "(Optional / nice-to-have) WhatsApp section currently only validates phone length client-side as >= 10 digits via .replace(/\\D/g, '').length, but backend min_length is 8. They behave consistently for India-format numbers; consider aligning by tightening backend to 10 if Indian-only is the target.",
+    "(Optional) ReadingPage.jsx error CTA button reads 'Get your own reading' while the success-card variant reads 'Get my free reading' — minor copy inconsistency, easy unify."
+  ],
+  "critical_code_review_comments": [
+    "server.py /api/reading/{id}: correctly excludes mongo _id via projection {_id:0, request:0}. Good.",
+    "server.py /api/whatsapp/subscribe: digit-count validation (>=8) after stripping non-digits is correct; upsert by phone is idempotent. Solid.",
+    "server.py /api/notify: idempotent upsert on (email, product) pair. Email validation is minimal (checks for '@' and '.') — acceptable for MVP, but could be tightened with EmailStr.",
+    "ReadingView.jsx is correctly extracted as a pure component and used in both the modal result and the share page (DRY). Wraps content in id='reading-pdf-target' as required for PDF capture.",
+    "WhatsAppOptIn.jsx: nice loading + done states; toast fires on success. Inline `done` flag prevents duplicate submits.",
+    "Pricing.jsx: similar pattern, inline success message + toast; clean.",
+    "ReadingPage.jsx error CTA text says 'Get your own reading' (line 88) while reading-loaded CTA says 'Get my free reading' (line 136) — minor copy inconsistency.",
+    "server.py: app file ~310 lines but still focused. No size concerns yet."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration2.py"
+  ],
+  "success_rate": {
+    "backend": "100% on iteration-2 endpoints (11/11). /api/reading POST remains blocked by LLM key budget (pre-existing).",
+    "frontend": "100% on iteration-2 flows (share page, 404, WhatsApp opt-in, Pricing notify, modal step1->step2)."
+  },
+  "test_credentials": "N/A — no auth in this app",
+  "seed_data_creation": "Created via tests: db.whatsapp_subs entry for phone=9876543210 (TEST Ananya / TEST Ananya2 / TEST WA User via upsert); db.notify_list entries for TEST_notify@example.com, TEST_idem@example.com, TEST_default_product@example.com, TEST_pricing_ui@example.com. All TEST_-prefixed and safe to purge.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All iteration 2 features verified. Use /app/backend/tests/test_iteration2.py and /app/backend/tests/backend_test.py together for regression. POST /api/reading will continue to 502 until EMERGENT_LLM_KEY budget is refreshed; do not interpret as a new bug. Seed doc id='demo-reading-001' (Ananya / Pisces) is the canonical share-page test target — do not delete from db.readings.",
+  "rca of the issue": "No new issues found. Only carry-over: EMERGENT_LLM_KEY budget exceeded → /api/reading POST returns 502. Mitigation: rotate / top-up the key in /app/backend/.env."
+}

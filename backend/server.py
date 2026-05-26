@@ -168,7 +168,8 @@ async def generate_reading(req: ReadingRequest):
         raise HTTPException(status_code=502, detail=f"Astro engine unavailable: {str(e)[:120]}")
 
     # Parse JSON from response (strip code fences if present)
-    import json, re
+    import json
+    import re
     text = raw.strip()
     text = re.sub(r"^```(?:json)?\s*", "", text)
     text = re.sub(r"\s*```$", "", text)
@@ -214,9 +215,71 @@ async def generate_reading(req: ReadingRequest):
     return response
 
 
+@api_router.get("/reading/{reading_id}", response_model=ReadingResponse)
+async def get_reading(reading_id: str):
+    """Public endpoint to fetch a previously generated reading by id (for share URLs)."""
+    doc = await db.readings.find_one({"id": reading_id}, {"_id": 0, "request": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Reading not found")
+    return ReadingResponse(**doc)
+
+
+class WhatsAppSubscribe(BaseModel):
+    name: str = Field(..., min_length=1, max_length=80)
+    phone: str = Field(..., min_length=8, max_length=20)
+    sun_sign: Optional[str] = None
+
+
+@api_router.post("/whatsapp/subscribe")
+async def whatsapp_subscribe(payload: WhatsAppSubscribe):
+    """Daily WhatsApp horoscope opt-in."""
+    phone = payload.phone.strip().replace(" ", "")
+    digits = "".join(ch for ch in phone if ch.isdigit())
+    if len(digits) < 8:
+        raise HTTPException(status_code=400, detail="Valid phone number required")
+    doc = {
+        "id": str(uuid.uuid4()),
+        "name": payload.name.strip(),
+        "phone": phone,
+        "sun_sign": payload.sun_sign,
+        "active": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    # upsert by phone
+    await db.whatsapp_subs.update_one(
+        {"phone": phone}, {"$set": doc}, upsert=True
+    )
+    return {"ok": True, "message": f"Namaste {payload.name}! Your daily horoscope is locked in."}
+
+
+class NotifyRequest(BaseModel):
+    email: str = Field(..., min_length=3, max_length=200)
+    product: Optional[str] = "kundali_deep_dive"
+
+
+@api_router.post("/notify")
+async def notify(payload: NotifyRequest):
+    """Capture 'notify me when live' interest for paid products."""
+    email = payload.email.strip().lower()
+    if "@" not in email or "." not in email:
+        raise HTTPException(status_code=400, detail="Valid email required")
+    doc = {
+        "id": str(uuid.uuid4()),
+        "email": email,
+        "product": payload.product,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.notify_list.update_one(
+        {"email": email, "product": payload.product},
+        {"$set": doc},
+        upsert=True,
+    )
+    return {"ok": True, "message": "You're on the list. We'll alert you the moment it goes live."}
+
+
 @api_router.post("/contact")
 async def contact(payload: dict):
-    """Capture lead / contact form submissions."""
+    """Generic lead capture."""
     email = (payload or {}).get("email", "").strip()
     if not email or "@" not in email:
         raise HTTPException(status_code=400, detail="Valid email required")
