@@ -1,0 +1,80 @@
+{
+  "summary": "Backend: health/contact/validation endpoints all PASS (9/14). However, /api/reading consistently returns 502 'Budget has been exceeded! Current cost: 0' from EMERGENT_LLM_KEY / openai gpt-5.2 — all 5 reading happy-path tests fail due to LLM key budget exhaustion. Backend code wiring, validation (422 on missing fields), zodiac sun-sign computation, and contact lead capture are all correct. Frontend: landing renders all 10 sections, hero CTA opens modal, step1→step2 navigation works, all 5 focus options present, Escape closes modal, form resets on close, modal opens correctly on 390px mobile with no horizontal overflow.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "POST /api/reading",
+        "issue": "Returns 502 for ALL focus areas: 'Astro engine unavailable: Failed to generate chat completion: litellm.BadRequestError: OpenAIException - Budget has been exceeded! Current cost: 0'. The EMERGENT_LLM_KEY in /app/backend/.env has exhausted its budget on the openai/gpt-5.2 provider. The entire reading flow is non-functional. Main agent must request a fresh / topped-up EMERGENT_LLM_KEY before any reading generation will work.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ReadingModal",
+        "issue": "Test spec asks for data-testid='modal-close-button' but the close button (shadcn DialogContent default X in top-right) has NO data-testid. It does work (text content 'Close', clickable, visible) but is not addressable via the expected selector. Add data-testid='modal-close-button' to the DialogClose / close button in components/ui/dialog.jsx or render a custom close.",
+        "selector": "[data-testid=\"modal-close-button\"]",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "ReadingModal date/time inputs",
+        "issue": "Uses native HTML <input type='date'> and <input type='time'> which renders the browser default picker (mm/dd/yyyy placeholder on mobile). Per design guidelines, prefer a shadcn Calendar / time picker for consistent premium UX.",
+        "selector": "[data-testid=\"input-dob\"], [data-testid=\"input-tob\"]",
+        "priority": "LOW"
+      },
+      {
+        "component": "DialogContent",
+        "issue": "Console warning: 'Missing Description or aria-describedby={undefined} for {DialogContent}'. Add a DialogDescription or aria-describedby for a11y compliance.",
+        "selector": "[data-testid=\"reading-modal\"]",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Reading generation end-to-end",
+        "issue": "Frontend correctly POSTs to /api/reading and handles errors with a toast + falls back to step 2, but because the backend LLM key budget is exhausted, the user always sees 'Astro engine unavailable...' toast. Could not validate the step3→step4 transition with a real reading payload. Frontend code path appears correct based on inspection.",
+        "affected_selectors": ["[data-testid=\"reading-result\"]", "[data-testid=\"focus-career\"]"]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Landing desktop & mobile",
+        "issues": ["Visual design is premium and on-brand: gold accents, dark cosmic background, good typography, no horizontal overflow on 390px. No contrast/spacing issues observed."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "URGENT: Refresh / top up EMERGENT_LLM_KEY — current key returns 'Budget has been exceeded! Current cost: 0' from openai/gpt-5.2 via litellm. Without this, /api/reading is completely broken.",
+    "Add data-testid='modal-close-button' to the shadcn DialogContent close button (edit /app/frontend/src/components/ui/dialog.jsx) so the close interaction is testable per spec.",
+    "Add a DialogDescription (or aria-describedby) inside ReadingModal to clear the React a11y warning.",
+    "(Optional polish) Replace native <input type=date|time> with shadcn Calendar + time picker for consistent premium UX."
+  ],
+  "critical_code_review_comments": [
+    "server.py /api/reading: LLM error handling is good (502 with truncated detail), JSON parsing is robust (strips code fences, falls back to regex extraction). No issues.",
+    "server.py compute_sun_sign: returns Leo for 1995-08-15 correctly (verified the response would carry this).",
+    "ReadingModal.jsx: axios timeout=90000 matches the 20–40s LLM SLA, form reset on close has a 300ms delay to avoid flicker — good UX.",
+    "ReadingModal.jsx: canProceedStep1 correctly trims name/place — good validation.",
+    "server.py /api/contact: minimal email validation (presence of '@') is fine for MVP but could leverage EmailStr Pydantic type for robustness.",
+    "server.py POST /api/contact uses `payload: dict` instead of a Pydantic model — inconsistent with /reading. Consider a ContactRequest model for validation + 422 instead of 400."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py",
+    "/app/backend/tests/__init__.py"
+  ],
+  "success_rate": {
+    "backend": "64% (9/14 — all 5 failures are due to LLM key budget, not code bugs)",
+    "frontend": "85% (modal + sections + navigation + mobile all work; could not verify reading-result render due to backend 502)"
+  },
+  "test_credentials": "N/A — no auth in this app",
+  "seed_data_creation": "Created one TEST_user@example.com lead via /api/contact during test run (low impact; can be purged).",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "Backend pytest file at /app/backend/tests/backend_test.py — run with: pytest /app/backend/tests/backend_test.py -v. Reading tests will continue failing with 502 until EMERGENT_LLM_KEY is refreshed. Once refreshed, the same suite covers happy path + validation. Frontend ReadingModal step3→step4 transition could not be E2E verified — re-run the playwright flow that clicks focus-career and waits up to 60s for [data-testid='reading-result'].",
+  "rca of the issue": "Root cause of reading failures: EMERGENT_LLM_KEY (sk-emergent-9381e1902B91c49140) in /app/backend/.env is over budget on openai/gpt-5.2 (litellm.BadRequestError: 'Budget has been exceeded! Current cost: 0'). Reproduction: curl -X POST https://astromitra-preview.preview.emergentagent.com/api/reading -H 'Content-Type: application/json' -d '{\"name\":\"Test User\",\"date_of_birth\":\"1995-08-15\",\"place_of_birth\":\"Mumbai, India\",\"focus_area\":\"career\"}' → returns 502 with the budget-exceeded message. Mitigation: rotate / top up the EMERGENT_LLM_KEY. No backend code change needed; error handling already gracefully surfaces the upstream error."
+}
