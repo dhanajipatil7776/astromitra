@@ -1,0 +1,194 @@
+{
+  "theme": "dark",
+  "archetype": "5_Luxury_with_Cosmic_Accents",
+  "brand_identity": {
+    "name": "AstroMitra",
+    "positioning": "Your Personalized AI Astro Guide",
+    "mood": ["Mystical", "Futuristic", "Emotional", "Premium", "Intelligent", "Cinematic"],
+    "design_philosophy": "Apple-level minimalism meets Luxury Indian spirituality. High contrast, cosmic gradients, deep space aesthetic."
+  },
+  "colors": {
+    "background": {
+      "base": "#030305",
+      "surface": "rgba(13, 11, 20, 0.6)",
+      "surface_elevated": "rgba(30, 20, 45, 0.4)",
+      "glass": "rgba(255, 255, 255, 0.03)"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#A0AAB2",
+      "muted": "#6C727F",
+      "accent": "#E5B869"
+    },
+    "accent": {
+      "gold": "#E5B869",
+      "gold_light": "#F1D596",
+      "purple": "#7A42A5",
+      "midnight": "#120B29"
+    },
+    "gradients": {
+      "gold_linear": "linear-gradient(135deg, #E5B869 0%, #F1D596 100%)",
+      "cosmic_radial": "radial-gradient(circle at center, rgba(122, 66, 165, 0.15) 0%, rgba(3, 3, 5, 1) 70%)",
+      "border_glow": "linear-gradient(90deg, rgba(229,184,105,0) 0%, rgba(229,184,105,0.5) 50%, rgba(229,184,105,0) 100%)"
+    }
+  },
+  "typography": {
+    "font_families": {
+      "heading": "'Outfit', sans-serif",
+      "accent": "'Cinzel', serif",
+      "body": "'Plus Jakarta Sans', sans-serif"
+    },
+    "rules": {
+      "h1": "text-5xl md:text-6xl lg:text-[4rem] font-light tracking-tighter leading-none",
+      "h2": "text-3xl md:text-4xl lg:text-5xl font-light tracking-tight",
+      "h3": "text-xl md:text-2xl font-normal",
+      "body": "text-base md:text-lg font-light leading-relaxed text-[#A0AAB2]",
+      "overline": "text-xs font-accent tracking-[0.2em] uppercase text-[#E5B869]"
+    }
+  },
+  "spacing_and_layout": {
+    "container": "max-w-7xl mx-auto px-6 md:px-12",
+    "section_padding": "py-24 md:py-32",
+    "bento_grid": {
+      "base": "grid grid-cols-1 md:grid-cols-8 lg:grid-cols-12 gap-6 md:gap-8",
+      "hero_span": "col-span-full md:col-span-8 row-span-2",
+      "square_span": "col-span-4 row-span-1",
+      "tall_span": "col-span-4 row-span-2"
+    },
+    "border_radius": "rounded-2xl md:rounded-3xl",
+    "glassmorphism": "backdrop-blur-xl bg-white/[0.03] border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)]"
+  },
+  "animations": {
+    "libraries_required": ["framer-motion", "lucide-react"],
+    "presets": {
+      "fade_up": { "initial": { "opacity": 0, "y": 30 }, "animate": { "opacity": 1, "y": 0 }, "transition": { "duration": 0.8, "ease": [0.16, 1, 0.3, 1] } },
+      "stagger_children": { "transition": { "staggerChildren": 0.1 } },
+      "hover_card": { "whileHover": { "y": -5, "transition": { "duration": 0.2 } } },
+      "floating": { "animate": { "y": [0, -10, 0] }, "transition": { "duration": 6, "repeat": "Infinity", "ease": "easeInOut" } },
+      "glow_pulse": { "animate": { "opacity": [0.4, 0.8, 0.4] }, "transition": { "duration": 4, "repeat": "Infinity", "ease": "easeInOut" } }
+    }
+  },
+  "components": {
+    "button_primary": "relative overflow-hidden rounded-full bg-gradient-to-r from-[#E5B869] to-[#F1D596] text-[#030305] font-medium px-8 py-4 transition-transform hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(229,184,105,0.3)]",
+    "button_secondary": "rounded-full bg-white/[0.05] border border-white/10 text-white font-medium px-8 py-4 backdrop-blur-md transition-all hover:bg-white/[0.1] hover:border-white/20",
+    "glass_card": "relative rounded-3xl backdrop-blur-xl bg-white/[0.03] border border-white/10 p-8 overflow-hidden group hover:border-[#E5B869]/30 transition-colors duration-500",
+    "input_field": "w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#E5B869]/50 focus:ring-1 focus:ring-[#E5B869]/50 transition-all"
+  },
+  "media": {
+    "hero_dashboard_ui": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/edf86df0-a266-40ef-8241-c97f6683d990/images/d2a1b2b5794d653fc02592f46c2bbdde43946db2854a9bc7a87bad22f130d9ad.png",
+      "description": "Cinematic UI mockup of astrology dashboard. Use in the Hero section floating on the right.",
+      "type": "image"
+    },
+    "cosmic_background": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/edf86df0-a266-40ef-8241-c97f6683d990/images/753458d5d9d280e930efe08a9683afe5cf5b414c27292235e787d98fee5f37c9.png",
+      "description": "Abstract deep space background. Use as absolute positioned background for Hero and CTA sections with opacity-40 and mix-blend-screen.",
+      "type": "background"
+    },
+    "zodiac_wheel_feature": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/edf86df0-a266-40ef-8241-c97f6683d990/images/3ed66112a1f4ef82b3515b916b8c731f619a3caba0d5c4e6cbdd333691fe7630.png",
+      "description": "Glowing golden zodiac wheel. Use in the final CTA section or Features grid.",
+      "type": "image"
+    },
+    "vedic_glass_ui": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/edf86df0-a266-40ef-8241-c97f6683d990/images/e142b59a9ede698a90569a204dfd7e47cda94474da67ab6e611da649a2693b79.png",
+      "description": "Modern Vedic astrology motif. Use in the 'Why AstroMitra' section as a visual accent.",
+      "type": "image"
+    },
+    "testimonials": [
+      {
+        "url": "https://images.unsplash.com/photo-1764546373114-2d7a87221733?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTV8MHwxfHNlYXJjaHwzfHxpbmRpYW4lMjBwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGRhcmslMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc3OTgwNDM2NXww&ixlib=rb-4.1.0&q=85",
+        "description": "Testimonial user 1"
+      },
+      {
+        "url": "https://images.pexels.com/photos/12552598/pexels-photo-12552598.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Testimonial user 2"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1638290047807-4c9d389b9aa6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTV8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGRhcmslMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc3OTgwNDM2NXww&ixlib=rb-4.1.0&q=85",
+        "description": "Testimonial user 3"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "name": "Announcement Bar",
+      "layout": "Sticky top, z-50, text-center",
+      "styling": "bg-[#E5B869]/10 border-b border-[#E5B869]/20 backdrop-blur-md py-2",
+      "content": "AI-Powered Personalized Astrology • Available 24x7 • Instant Guidance"
+    },
+    {
+      "name": "Header",
+      "layout": "Sticky below announcement, flex between",
+      "styling": "Crystal Glassmorphism: bg-[#030305]/60 backdrop-blur-xl border-b border-white/5",
+      "brand": "Typographic logo using 'Cinzel' font, gold text."
+    },
+    {
+      "name": "Hero",
+      "layout": "Min-h-screen, Grid 12 cols. Left content (col-span-6), Right Image (col-span-6)",
+      "background": "Absolute positioning of cosmic_background image with radial gradient overlay fading to background color.",
+      "elements": [
+        "Headline: Your Future. Decoded by AI & Ancient Wisdom.",
+        "Subheadline: Body text explaining the value proposition.",
+        "CTAs: Primary 'Get Your Astro Reading', Secondary 'Talk to AstroMitra'",
+        "Image: hero_dashboard_ui wrapped in motion.div with floating animation."
+      ]
+    },
+    {
+      "name": "Social Proof",
+      "layout": "Flex row, center aligned",
+      "styling": "Border-y border-white/5 py-12 bg-white/[0.01]",
+      "elements": "Counters: 10,000+ Readings, 95% Satisfaction, Vedic + Modern AI"
+    },
+    {
+      "name": "Why AstroMitra",
+      "layout": "Grid 4 cols (1 on mobile, 2 tablet, 4 desktop)",
+      "cards": "Use 'Tracing Beam' effect or border-glow gradients on hover. Pure glass cards.",
+      "content": "AI-Powered Predictions, Ancient Vedic Wisdom, Personalized Guidance, Instant Clarity."
+    },
+    {
+      "name": "Features Grid",
+      "layout": "Bento Grid (Tetris Mode)",
+      "styling": "Massive gaps, high contrast.",
+      "content": "Kundali Analysis, Career, Love, Finance, etc. Use vedic_glass_ui in one of the tall bento items."
+    },
+    {
+      "name": "How It Works",
+      "layout": "Vertical timeline or horizontal steps with glowing golden connectors.",
+      "steps": ["Enter Birth Details", "AI + Astrology Analysis", "Personalized Guidance"]
+    },
+    {
+      "name": "Testimonials",
+      "layout": "Carousel or Masonry grid",
+      "styling": "Glass cards, use Unsplash media URLs for avatars.",
+      "content": "Focus on young Indian professionals."
+    },
+    {
+      "name": "CTA Section",
+      "layout": "Center aligned, massive padding",
+      "background": "zodiac_wheel_feature as an immense centered background image, opacity-30, mix-blend-screen.",
+      "elements": "Discover What The Universe Has Planned For You + CTA button."
+    },
+    {
+      "name": "Free Reading Modal",
+      "layout": "Fixed overlay, center glass card",
+      "styling": "Glassmorphism, dark backdrop blur.",
+      "functionality": "Multi-step form (Name/DOB -> Focus Area -> AI Reading generation state -> Result)"
+    }
+  ],
+  "testing": {
+    "rules": "All interactive and key informational elements MUST include a data-testid attribute.",
+    "convention": "kebab-case, role-based",
+    "examples": ["data-testid='hero-cta-primary'", "data-testid='reading-form-submit-button'", "data-testid='modal-close-button'"]
+  },
+  "instructions_to_main_agent": [
+    "Install required dependencies: yarn add framer-motion lucide-react clsx tailwind-merge",
+    "Import fonts via Google Fonts in index.html: Outfit (300, 400), Cinzel (400, 600), Plus Jakarta Sans (300, 400, 500)",
+    "Do NOT use pure #000000, always use the provided background base #030305.",
+    "Use framer-motion for smooth entrance animations (fade_up) and floating effects on images.",
+    "Never use raw images without an overlay or gradient blend to ensure text contrast.",
+    "Implement the Free Reading Modal as a Shadcn Dialog (or raw Radix dialog/framer-motion modal) customized heavily with the glass_card styles.",
+    "Ensure the hero section does not overlap the sticky header by applying proper padding.",
+    "Strictly follow the data-testid attributes rule for all buttons and form inputs."
+  ]
+}
