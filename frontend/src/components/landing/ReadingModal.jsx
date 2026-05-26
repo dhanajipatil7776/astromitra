@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -115,6 +116,9 @@ export default function ReadingModal({ open, onOpenChange }) {
               </>
             )}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Generate your personalized AI astrology reading by entering birth details and choosing a focus area.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="relative max-h-[70vh] overflow-y-auto px-7 pb-7 pt-2">
